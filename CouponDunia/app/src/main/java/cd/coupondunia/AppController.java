@@ -2,6 +2,7 @@ package cd.coupondunia;
 
 import android.app.Application;
 import android.content.ContextWrapper;
+import android.location.LocationManager;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
@@ -19,6 +20,8 @@ public class AppController extends Application {
     private ImageLoader mImageLoader;
 
     private static AppController mInstance;
+
+    private LocationManager locationManager;
 
     @Override
     public void onCreate() {
@@ -62,5 +65,15 @@ public class AppController extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+
+    public void setLocationManager(LocationManager locationManager)
+    {
+        this.locationManager=locationManager;
+    }
+
+    public LocationManager getLocationManager()
+    {
+        return this.locationManager;
     }
 }

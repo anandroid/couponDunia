@@ -1,8 +1,10 @@
 package cd.coupondunia.Activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.android.volley.Cache;
 import com.android.volley.Request;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import cd.coupondunia.Adapters.OutLetAdapter;
 import cd.coupondunia.AppController;
@@ -59,9 +63,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
+    LocationListener locationListener;
+
 
 
     String locationKeyWord;
+
+    private final int REQUEST_CODE_SOME_FEATURES_PERMISSIONS=1000;
+
+    String TAG="LOCATION";
+
+
 
 
     @Override
@@ -70,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
 
         setViews();
+
+        askForPermissions();
+
 
 
     }
@@ -118,6 +133,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
+
+
+
 
 
 
@@ -146,7 +170,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onPause() {
+
         mGoogleApiClient.disconnect();
+
+        cancelLocationUpdates();
+
         super.onPause();
     }
 
@@ -156,7 +184,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         if (isLocationEnabled){
 
+            Log.e(TAG,"isLocationEnabled");
             mGoogleApiClient.connect();
+        }
+    }
+
+    private void cancelLocationUpdates()
+    {
+        LocationManager locationManager=AppController.getInstance().getLocationManager();
+
+        if(locationManager!=null && locationListener!=null)
+        {
+            locationManager.removeUpdates(locationListener);
+
         }
     }
 
@@ -199,7 +239,56 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             dialog.show();
         }
 
-        return gps_enabled;
+        return gps_enabled || network_enabled;
+    }
+
+    private void askForPermissions()
+    {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
+            int hasLocationPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            int hasSMSPermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            List<String> permissions = new ArrayList<String>();
+            if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+
+
+            if (hasSMSPermission != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+
+            if (!permissions.isEmpty()) {
+                requestPermissions(permissions.toArray(new String[permissions.size()]), REQUEST_CODE_SOME_FEATURES_PERMISSIONS);
+            }
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch ( requestCode ) {
+            case REQUEST_CODE_SOME_FEATURES_PERMISSIONS: {
+                for( int i = 0; i < permissions.length; i++ ) {
+                    if( grantResults[i] == PackageManager.PERMISSION_GRANTED ) {
+                        Log.d( "Permissions", "Permission Granted: " + permissions[i] );
+
+                        if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION))
+                        {
+                            initLocationClient();
+                        }
+
+                    } else if( grantResults[i] == PackageManager.PERMISSION_DENIED ) {
+                        //Log.d( "Permissions", "Permission Denied: " + permissions[i] );
+                    }
+                }
+            }
+            break;
+            default: {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
     }
 
 
@@ -207,16 +296,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
 
-        LocationListener locationListener= new LocationListener() {
+       locationListener= new LocationListener() {
                     @Override
                     public void onStatusChanged(String provider, int status, Bundle extras) {
 
+                        Log.e(TAG,"onStatusChanged");
                     }
                     @Override
                     public void onProviderEnabled(String provider) {
+
+                        Log.e(TAG,"providerEnabled");
                     }
                     @Override
                     public void onProviderDisabled(String provider) {
+
+                        Log.e(TAG,"providerDisabled");
                     }
                     @Override
                     public void onLocationChanged(final Location location) {
@@ -224,23 +318,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         //Call the API only if the distance is changed much
 
-                        if(location.distanceTo(mLastLocation)>getResources().getInteger(R.integer.min_distance_listen))
+                        if(mLastLocation==null || location.distanceTo(mLastLocation)>getResources().getInteger(R.integer.min_distance_listen))
                         {
                             new GetNearBy().executePreHeavy();
                         }
 
                         mLastLocation=location;
 
+                        android.util.Log.e("onLocationChanged",mLastLocation.getLatitude()+" - "+mLastLocation.getLongitude());
+
+
 
                     }
                 };
 
-        StaticUtils.requestLocation(this,locationListener);
 
+        StaticUtils.requestLocation(this,locationListener);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        new GetNearBy().executePreHeavy();
+       // android.util.Log.e("onConnected",mLastLocation.getLatitude()+" - "+mLastLocation.getLongitude());
+
+        if(mLastLocation!=null) {
+            new GetNearBy().executePreHeavy();
+        }
+
 
 
 

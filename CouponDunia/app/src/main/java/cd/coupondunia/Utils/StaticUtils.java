@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import cd.coupondunia.AppController;
 import cd.coupondunia.R;
 
 /**
@@ -54,15 +55,25 @@ public class StaticUtils {
     }
 
     public static void requestLocation(Context context, LocationListener locationListener) {
+
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Criteria crta = new Criteria();
-        crta.setAccuracy(Criteria.ACCURACY_COARSE);
+        crta.setAccuracy(Criteria.ACCURACY_FINE);
         crta.setAltitudeRequired(true);
         crta.setBearingRequired(true);
         crta.setCostAllowed(true);
         crta.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(crta, true);
-        Log.d("", "provider : " + provider);
+        String provider ;//= locationManager.getBestProvider(crta, true);
+
+        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        {
+            provider = LocationManager.NETWORK_PROVIDER;
+        }
+        else
+        {
+            provider=LocationManager.GPS_PROVIDER;
+        }
+        Log.d("LOCATION", "provider : " + provider);
         // String provider = LocationManager.GPS_PROVIDER;
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -75,6 +86,8 @@ public class StaticUtils {
             return;
         }
         locationManager.requestLocationUpdates(provider,context.getResources().getInteger(R.integer.min_time_listen), context.getResources().getInteger(R.integer.min_distance_listen), locationListener);
+
+        AppController.getInstance().setLocationManager(locationManager);
 
     }
 
