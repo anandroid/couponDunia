@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">CouponDunia</string>
+    <string name="action_settings">Settings</string>
+    <string name="some_error">Oops ! Some Error has occured</string>
+    <string name="location_error">Unable to Fetch Location</string>
+    <string name="gps_network_not_enabled">Please Enable Location Services</string>
+    <string name="open_location_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
+    <integer name="min_distance_listen">1000</integer>
+    <integer name="min_time_listen">30000</integer>
+</resources>

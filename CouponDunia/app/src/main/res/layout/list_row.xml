@@ -1,0 +1,121 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:background="@color/imageBorder">
+
+    <RelativeLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:layout_marginRight="5dp"
+        android:padding="5dp"
+        >
+
+         <ImageView
+           android:id="@+id/cover_image"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:scaleType="fitXY"
+             />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#99000000"
+                />
+
+        <ImageButton
+            android:id="@+id/likeImageButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/heart_selector_gray"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            />
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="150dp"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/loading"
+            android:background="@drawable/border"
+            />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/likeImageButton"
+            android:layout_alignBottom="@+id/thumbnail"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:padding="8dp"
+            android:text="dafdafda"
+            android:textColor="#fff"
+            android:textSize="22dp" />
+
+        <TextView
+            android:id="@+id/categoriesTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/thumbnail"
+            android:layout_margin="5dp"
+            android:textColor="#fff"
+            android:textSize="16dp"
+            android:maxLines="1"
+            />
+
+        <TextView
+            android:id="@+id/distanceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/categoriesTextView"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:textSize="14dp"
+            android:textColor="#fcfcfc"
+            android:textStyle="italic"
+
+            />
+
+
+
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/coupon_wrap">
+        <TextView
+            android:id="@+id/countTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="3"
+            android:textColor="#fff"
+            android:textSize="12dp"
+
+            />
+
+    </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
